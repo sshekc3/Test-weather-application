@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .weather-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+    input {
+      width: 70%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0056b3; }
+    .result { margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="weather-card">
+    <h2>Weather App</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Search</button>
+
+    <div class="result" id="weatherResult"></div>
+  </div>
+
+  <script>
+    const apiKey = 'UsiE1I5bJS9PULUwKmvt';
+
+    async function getWeather() {
+      const city = document.getElementById('cityInput').value;
+      const resultDiv = document.getElementById('weatherResult');
+
+      if (!city) {
+        resultDiv.innerHTML = '<p style="color:red;">Please enter a city.</p>';
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('City not found');
+        
+        const data = await response.json();
+        
+        // Extract key information from JSON response
+        const temp = data.main.temp;
+        const description = data.weather[0].description;
+        const humidity = data.main.humidity;
+
+        // Render data to UI
+        resultDiv.innerHTML = `
+          <h3>${data.name}, ${data.sys.country}</h3>
+          <p><strong>Temperature:</strong> ${temp} °C</p>
+          <p><strong>Condition:</strong> ${description}</p>
+          <p><strong>Humidity:</strong> ${humidity}%</p>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `<p style="color:red;">${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
